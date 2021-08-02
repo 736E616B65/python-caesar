@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+import argparse
+
+class caesar:
+	def __init__(self, key: str) -> None:
+		self.__encode = {}
+		self.__decode = {}
+		self.__key = key
+
+	def makeDisk(self):
+		keytable = map(lambda x: (chr(x+65), x), range(26))
+		
+		key2index = {}	
+		for t in keytable:
+			alphabet, index = t[0], t[1]		
+			key2index[alphabet] = index		
+		
+		if self.__key in key2index:
+			k = key2index[self.__key]
+		else:
+			print("caesar.makeDisk 'key' is not alphabet")
+			exit()
+			
+		for i in range(26):
+			enc_i = (i+k)%26
+			enc_ascii = enc_i + 65 
+			self.__encode[chr(i+65)] = chr(enc_ascii)
+			self.__decode[chr(enc_ascii)] = chr(i+65) 
+
+	def cipher(self, msg: str, mode: bool):
+		ret = ''	
+		
+		msg = msg.upper()
+				
+		if mode:
+			disk = self.__encode
+
+		else:
+			disk = self.__decode
+			
+		for c in msg:
+			if c in disk: 
+				ret += disk[c]
+			else:
+				ret += c
+				
+		return ret
+
+if __name__ == '__main__':
+	cipher = caesar('F')
+	cipher.makeDisk()
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument("-e", "--encode", help="-e, --encoding plain text to cipher text")
+	parser.add_argument("-d", "--decode", help="-d, --decoding  cipher text to plain text")
+	parser.add_argument("-f", "--file", action = "store_true", help="-f --file add option, -fe or -fd")
+	args = parser.parse_args()
+
+	if args.encode:
+		print(cipher.cipher(args.encode, True))
+
+	elif args.decode:
+		print(cipher.cipher(args.decode, False))
